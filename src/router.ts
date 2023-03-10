@@ -1,5 +1,8 @@
 import express, { Router } from "express";
 
+import loginController from "./controllers/loginController";
+import registerController from "./controllers/registerController";
+
 const router = Router();
 
 router.get("/", (req, res) => {
@@ -9,9 +12,9 @@ router.get("/", (req, res) => {
 //auth
 router.get("/auth", (req, res) => {});
 
-router.post("/api/login", express.json(), (req, res) => {});
+router.post("/api/login", express.json(), loginController);
 
-router.post("/api/register", express.json(), (req, res) => {});
+router.post("/api/register", express.json(), registerController);
 
 //friends
 router.get("/friends", (req, res) => {});
