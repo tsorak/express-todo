@@ -5,7 +5,7 @@ import { createSession } from "../session";
 
 const loginController = (req: Request, res: Response) => {
 	const { email, password } = req.body;
-	if (!email || !password) return res.status(400).send("Bad Request");
+	if (!email || !password) return res.status(400).json({ error: { message: "Missing email or password" } });
 
 	try {
 		const userID = correctUserDetails(email, password);
@@ -16,7 +16,7 @@ const loginController = (req: Request, res: Response) => {
 		if (typeof error !== "object" || error === null) return res.status(500).end();
 		const err = error as { message: string; status: number };
 
-		return res.status(err.status).send(err.message);
+		return res.status(err.status).json({ error: { message: err.message } });
 	}
 };
 
