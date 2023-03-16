@@ -17,10 +17,12 @@ db.exec(`
     );
     CREATE TABLE IF NOT EXISTS friends (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        friend_id INTEGER NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (friend_id) REFERENCES users(id)
+        user INTEGER NOT NULL,
+        friend INTEGER NOT NULL,
+        status TEXT NOT NULL DEFAULT "pending",
+        CONSTRAINT unique_friends UNIQUE (user, friend),
+        FOREIGN KEY (user) REFERENCES users(id),
+        FOREIGN KEY (friend) REFERENCES users(id)
     );
     CREATE TABLE IF NOT EXISTS todos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

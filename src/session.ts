@@ -11,6 +11,7 @@ function createSession(userID: number, res: Response): void {
 
 	res.cookie("refreshToken", refreshToken, { domain: "localhost", path: "/", maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true });
 	res.cookie("accessToken", generateAccessToken(userID), { domain: "localhost", path: "/", maxAge: 1000 * 60 * 60, httpOnly: true });
+	res.cookie("idToken", userID, { domain: "localhost", path: "/", maxAge: 1000 * 60 * 60, httpOnly: false });
 }
 
 function verifySession(req: Request, res: Response, next: NextFunction) {
@@ -25,7 +26,7 @@ function verifySession(req: Request, res: Response, next: NextFunction) {
 		return next();
 	} catch (error) {
 		console.log(`Access was denied on '${req.url}'`);
-		return res.status(401).sendFile("public/401.html", { root: "." });
+		return res.status(401).end();
 	}
 }
 

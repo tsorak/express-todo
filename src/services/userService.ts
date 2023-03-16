@@ -23,6 +23,13 @@ function getUserByID(id: number): User | undefined {
 	return match as User;
 }
 
+function getUserByName(name: string): User | undefined {
+	const q = db.prepare(`SELECT * FROM users WHERE name = ?`);
+	const match = q.get(name);
+
+	return match as User;
+}
+
 function correctUserDetails(email: string, password: string): number {
 	const q = db.prepare(`SELECT id, password FROM users WHERE email = ?`);
 	const user = q.get(email);
@@ -40,4 +47,4 @@ function addUser(email: string, password: string, name: string): number {
 	return id;
 }
 
-export { getUserID, getUserByID, correctUserDetails, addUser };
+export { getUserID, getUserByID, getUserByName, correctUserDetails, addUser };

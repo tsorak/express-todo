@@ -7,3 +7,4 @@ The site was built in a seperate repository and can be found [here](https://gith
 ## TODO
 
 - [ ] Implement validation (joi)
+- [ ] Use MySQL
