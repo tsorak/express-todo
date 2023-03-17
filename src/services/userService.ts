@@ -1,3 +1,5 @@
+import { ResultSetHeader } from "mysql2";
+
 import bcrypt from "bcrypt";
 
 import db from "../db";
@@ -9,42 +11,78 @@ interface User {
 	password: string;
 }
 
-function getUserID(email: string): number | undefined {
-	const q = db.prepare(`SELECT id FROM users WHERE email = ?`);
-	const match = q.get(email);
+async function getUserID(email: string): Promise<number | undefined> {
+	const conn = await db;
+	const q = await conn.prepare(`SELECT id FROM users WHERE email = ?`);
+	const result = await q.execute([email]);
+	const rows = result[0] as { id: number }[] | [];
+	conn.release();
 
-	return match?.id;
+	if (!rows.length) return undefined;
+
+	const { id } = rows[0];
+	return id;
 }
 
-function getUserByID(id: number): User | undefined {
-	const q = db.prepare(`SELECT * FROM users WHERE id = ?`);
-	const match = q.get(id);
+// async function getUserByID(id: number): Promise<User | undefined> {
+// 	const conn = await db;
+// 	const q = await conn.prepare(`SELECT * FROM users WHERE id = ?`);
+// 	const result = (await q.execute([id])) as unknown[];
+// 	const rows = result[0] as User[] | undefined;
+// 	conn.release();
 
-	return match as User;
+// 	if (!rows) return undefined;
+
+// 	const match = rows[0];
+// 	return match;
+// }
+
+async function getUserByName(name: string): Promise<User | undefined> {
+	const conn = await db;
+	const q = await conn.prepare(`SELECT * FROM users WHERE name = ?`);
+	const result = await q.execute([name]);
+	const rows = result[0] as User[] | [];
+	conn.release();
+
+	if (!rows.length) return undefined;
+
+	const match = rows[0];
+	return match;
 }
 
-function getUserByName(name: string): User | undefined {
-	const q = db.prepare(`SELECT * FROM users WHERE name = ?`);
-	const match = q.get(name);
+async function correctUserDetails(email: string, password: string): Promise<number> {
+	const conn = await db;
+	const q = await conn.prepare(`SELECT id, password FROM users WHERE email = ?`);
+	const result = await q.execute([email]);
+	const rows = result[0] as User[] | [];
+	conn.release();
 
-	return match as User;
-}
+	if (!rows.length) throw { message: "User not found", status: 400 };
 
-function correctUserDetails(email: string, password: string): number {
-	const q = db.prepare(`SELECT id, password FROM users WHERE email = ?`);
-	const user = q.get(email);
-
-	if (!user) throw { message: "User not found", status: 400 };
+	const user = rows[0];
 	if (!bcrypt.compareSync(password, user.password)) throw { message: "Incorrect password", status: 401 };
 
 	return user.id;
 }
 
-function addUser(email: string, password: string, name: string): number {
-	const q = db.prepare(`INSERT INTO users (email, password, name) VALUES (?, ?, ?) RETURNING id`);
-	const { id } = q.get(email, bcrypt.hashSync(password, 10), name);
+async function addUser(email: string, password: string, name: string): Promise<number> {
+	const conn = await db;
+	const q = await conn.prepare(`INSERT INTO users (email, password, name) VALUES (?, ?, ?)`);
+	const result = await q.execute([email, bcrypt.hashSync(password, 10), name]);
+	const { insertId } = result[0] as ResultSetHeader;
+	conn.release();
 
-	return id;
+	return insertId;
 }
 
-export { getUserID, getUserByID, getUserByName, correctUserDetails, addUser };
+// async function test() {
+// 	const id = await addUser("testEmail", "testPass", "testName");
+// 	console.log("testUserID:", id);
+
+// 	const user = await getUserByID(id);
+// 	console.log("testUser:", user);
+// }
+
+// test();
+
+export { getUserID, getUserByName, correctUserDetails, addUser };

@@ -1,36 +1,18 @@
-import Database from "better-sqlite3";
+import * as mysql from "mysql2/promise";
 
-const db = new Database("dev.db", { verbose: console.log });
+import * as dotenv from "dotenv";
+dotenv.config();
 
-db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		email TEXT NOT NULL UNIQUE,
-		password TEXT NOT NULL,
-		name TEXT NOT NULL
-	);
-    CREATE TABLE IF NOT EXISTS refresh_tokens (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        token TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id)
-    );
-    CREATE TABLE IF NOT EXISTS friends (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user INTEGER NOT NULL,
-        friend INTEGER NOT NULL,
-        status TEXT NOT NULL DEFAULT "pending",
-        CONSTRAINT unique_friends UNIQUE (user, friend),
-        FOREIGN KEY (user) REFERENCES users(id),
-        FOREIGN KEY (friend) REFERENCES users(id)
-    );
-    CREATE TABLE IF NOT EXISTS todos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        title TEXT NOT NULL,
-        description TEXT,
-        FOREIGN KEY (user_id) REFERENCES users(id)
-    );
-`);
+const db = mysql
+	.createPool({
+		host: process.env.DB_HOST,
+		port: parseInt(process.env.DB_PORT || "3306"),
+		user: process.env.DB_USER,
+		password: process.env.DB_PASSWORD,
+		database: "todo_tsorak",
+		waitForConnections: true,
+		connectionLimit: 10
+	})
+	.getConnection();
 
 export default db;

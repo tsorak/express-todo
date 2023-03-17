@@ -1,50 +1,56 @@
+import { ResultSetHeader } from "mysql2";
+
 import db from "../db";
 
-function getFriendsByUserID(userID: number) {
-	// const q = db.prepare(`
-	//     SELECT CASE
-	//         WHEN user_id = ? THEN friend_id
-	//         ELSE user_id
-	//     END AS id, u.name AS name, pending FROM friends
-	//     JOIN users u ON u.id = CASE
-	//         WHEN user_id = ? THEN friend_id
-	//         ELSE user_id
-	//     END
-	//     WHERE user_id = ? OR friend_id = ?
-	// `);
-	// const q = db.prepare(`select f1.* from friends f1 inner join friends f2 on f1.user = f2.friend and f1.friend = f2.user where f1.user = ? or f1.friend = ?`);
-	const q = db.prepare(`SELECT user, friend, status FROM friends WHERE user = ? OR friend = ?`);
-	const friends = q.all(userID, userID);
+async function getFriendsByUserID(userID: number): Promise<{ user: number; friend: number; status: string }[] | []> {
+	const conn = await db;
+	const q = await conn.prepare(`SELECT user, friend, status FROM friends WHERE user = ? OR friend = ?`);
+	const result = await q.execute([userID, userID]);
+	const friends = result[0] as { user: number; friend: number; status: string }[] | [];
+	conn.release();
 
 	return friends;
 }
 
-function friendshipExists(userID: number, friendID: number) {
-	const q = db.prepare(`SELECT * FROM friends WHERE user IN (?,?) AND friend IN (?,?)`);
-	const friendship = q.get(userID, friendID, userID, friendID);
+async function friendshipExists(userID: number, friendID: number): Promise<boolean> {
+	const conn = await db;
+	const q = await conn.prepare(`SELECT * FROM friends WHERE user IN (?,?) AND friend IN (?,?)`);
+	const result = await q.execute([userID, friendID, userID, friendID]);
+	const rows = result[0] as { user: number; friend: number; status: string }[] | [];
+	conn.release();
 
-	return friendship;
+	if (rows.length > 0) return true;
+	return false;
 }
 
-function addFriend(userID: number, friendID: number) {
-	const q = db.prepare(`INSERT INTO friends (user, friend) VALUES (?, ?)`);
-	const { changes } = q.run(userID, friendID);
+async function addFriend(userID: number, friendID: number): Promise<boolean> {
+	const conn = await db;
+	const q = await conn.prepare(`INSERT INTO friends (user, friend) VALUES (?, ?)`);
+	const result = await q.execute([userID, friendID]);
+	const { affectedRows } = result[0] as ResultSetHeader;
+	conn.release();
 
-	return changes;
+	return !!affectedRows;
 }
 
-function acceptFriend(userID: number, friendID: number) {
-	const q = db.prepare(`UPDATE friends SET status='accepted' WHERE user = ? AND friend = ?`);
-	const { changes } = q.run(friendID, userID);
+async function acceptFriend(userID: number, friendID: number): Promise<boolean> {
+	const conn = await db;
+	const q = await conn.prepare(`UPDATE friends SET status='accepted' WHERE user = ? AND friend = ?`);
+	const result = await q.execute([friendID, userID]);
+	const { changedRows } = result[0] as ResultSetHeader;
+	conn.release();
 
-	return changes;
+	return !!changedRows;
 }
 
-function removeFriend(userID: number, friendID: number) {
-	const q = db.prepare(`DELETE FROM friends WHERE user IN (?,?) AND friend IN (?,?)`);
-	const { changes } = q.run(userID, friendID, userID, friendID);
+async function removeFriend(userID: number, friendID: number): Promise<boolean> {
+	const conn = await db;
+	const q = await conn.prepare(`DELETE FROM friends WHERE user IN (?,?) AND friend IN (?,?)`);
+	const result = await q.execute([userID, friendID, userID, friendID]);
+	const { affectedRows } = result[0] as ResultSetHeader;
+	conn.release();
 
-	return changes;
+	return !!affectedRows;
 }
 
 export { getFriendsByUserID, friendshipExists, addFriend, acceptFriend, removeFriend };

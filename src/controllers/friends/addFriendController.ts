@@ -2,16 +2,16 @@ import { Request, Response } from "express";
 import { addFriend, friendshipExists } from "../../services/friendService";
 import { getUserByName } from "../../services/userService";
 
-function addFriendController(req: Request, res: Response) {
+async function addFriendController(req: Request, res: Response) {
 	const jwt: { userID: number } = req.body.jwt;
 	const { username } = req.body;
 
-	const friend = getUserByName(username);
+	const friend = await getUserByName(username);
 	if (!friend) return res.status(404).json({ error: { message: "User not found" } });
 
 	if (friend.id === jwt.userID) return res.status(400).json({ error: { message: "You can not add yourself as a friend" } });
 
-	const friendship = friendshipExists(jwt.userID, friend.id);
+	const friendship = await friendshipExists(jwt.userID, friend.id);
 
 	if (friendship) return res.status(400).json({ error: { message: "Friendship already exists" } });
 
