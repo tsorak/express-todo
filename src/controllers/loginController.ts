@@ -5,18 +5,18 @@ import { createSession } from "../session";
 
 const loginController = async (req: Request, res: Response) => {
 	const { email, password } = req.body;
-	if (!email || !password) return res.status(400).json({ error: { message: "Missing email or password" } });
 
 	try {
 		const userID = await correctUserDetails(email, password);
 
 		createSession(userID, res);
 		return res.status(200).end();
-	} catch (error: unknown) {
-		if (typeof error !== "object" || error === null) return res.status(500).end();
-		const err = error as { message: string; status: number };
+	} catch (error) {
+		const err = error as Error;
+		console.log(err); //misc: log to disk to keep track of failed logins
 
-		return res.status(err.status).json({ error: { message: err.message } });
+		//The error message is either "Incorrect password" or "User not found", send Bad Request to prevent potential attackers from brute-forcing logins.
+		return res.status(400).json({ error: { message: "Invalid credentials" } });
 	}
 };
 

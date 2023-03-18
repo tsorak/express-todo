@@ -7,7 +7,7 @@ import db from "../db";
 interface User {
 	id: number;
 	email: string;
-	username: string;
+	name: string;
 	password: string;
 }
 
@@ -57,10 +57,10 @@ async function correctUserDetails(email: string, password: string): Promise<numb
 	const rows = result[0] as User[] | [];
 	conn.release();
 
-	if (!rows.length) throw { message: "User not found", status: 400 };
+	if (!rows.length) throw new Error("User not found");
 
 	const user = rows[0];
-	if (!bcrypt.compareSync(password, user.password)) throw { message: "Incorrect password", status: 401 };
+	if (!bcrypt.compareSync(password, user.password)) throw new Error("Incorrect password");
 
 	return user.id;
 }

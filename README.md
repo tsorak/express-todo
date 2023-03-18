@@ -21,4 +21,8 @@ The site was built in a seperate repository and can be found [here](https://gith
 
 ## TODO
 
-- [ ] Implement validation (joi)
+- [ ] Implement todo controllers, services
+- [x] Use MySQL
+- [x] Implement validation (joi)
+- [x] Return names on friends endpoints
+- [ ] Refresh tokens

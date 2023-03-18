@@ -2,11 +2,18 @@ import { ResultSetHeader } from "mysql2";
 
 import db from "../db";
 
-async function getFriendsByUserID(userID: number): Promise<{ user: number; friend: number; status: string }[] | []> {
+interface Friend {
+	id: number;
+	name: string;
+	status: string;
+	isInitiator: boolean;
+}
+
+async function getFriendsByUserID(userID: number): Promise<Friend[] | []> {
 	const conn = await db;
-	const q = await conn.prepare(`SELECT user, friend, status FROM friends WHERE user = ? OR friend = ?`);
-	const result = await q.execute([userID, userID]);
-	const friends = result[0] as { user: number; friend: number; status: string }[] | [];
+	const q = await conn.prepare(`CALL get_friends(?)`);
+	const result = ((await q.execute([userID])) as unknown[])[0] as unknown[];
+	const friends = result[0] as Friend[] | [];
 	conn.release();
 
 	return friends;
@@ -16,7 +23,7 @@ async function friendshipExists(userID: number, friendID: number): Promise<boole
 	const conn = await db;
 	const q = await conn.prepare(`SELECT * FROM friends WHERE user IN (?,?) AND friend IN (?,?)`);
 	const result = await q.execute([userID, friendID, userID, friendID]);
-	const rows = result[0] as { user: number; friend: number; status: string }[] | [];
+	const rows = result[0] as any[];
 	conn.release();
 
 	if (rows.length > 0) return true;

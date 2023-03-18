@@ -22,12 +22,25 @@ CREATE TABLE IF NOT EXISTS friends (
     FOREIGN KEY (user) REFERENCES users(id),
     FOREIGN KEY (friend) REFERENCES users(id)
 );
-CREATE TABLE IF NOT EXISTS todos (
+CREATE TABLE IF NOT EXISTS todo_lists (
     id INT PRIMARY KEY AUTO_INCREMENT,
     owner INT NOT NULL,
     title VARCHAR(128) NOT NULL,
-    content TEXT NOT NULL,
-    done INT NOT NULL DEFAULT 0,
-    CONSTRAINT chk_done_is_bool CHECK (done IN (0, 1)),
     FOREIGN KEY (owner) REFERENCES users(id)
 );
+CREATE TABLE IF NOT EXISTS todos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    list_id INT NOT NULL,
+    content VARCHAR(128) NOT NULL,
+    completed BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (list_id) REFERENCES todo_lists(id)
+);
+DELIMITER $$
+CREATE PROCEDURE get_friends(IN user_id INT)
+BEGIN
+    SELECT u.id, u.name, f.status, (f.user = user_id) as isInitiator FROM users u
+    INNER JOIN friends f
+    ON (f.user = user_id AND f.friend = u.id)
+    OR (f.user = u.id AND f.friend = user_id);
+END$$
+DELIMITER ;
