@@ -11,6 +11,12 @@ import addFriendController from "./controllers/friends/addFriendController";
 import acceptFriendController from "./controllers/friends/acceptFriendController";
 import removeFriendController from "./controllers/friends/removeFriendController";
 
+import getTodoListsController from "./controllers/todos/getTodoListsController";
+import addListController from "./controllers/todos/addListController";
+import addTodoController from "./controllers/todos/addTodoController";
+import toggleTodoController from "./controllers/todos/toggleTodoController";
+import removeTodoController from "./controllers/todos/removeTodoController";
+
 const router = Router();
 
 //auth
@@ -34,14 +40,14 @@ router.delete("/api/friends", express.json(), validate.friends.remove, verifySes
 //todos
 router.get("/todos", (req, res) => res.redirect("/?page=todos"));
 
-router.get("/api/todolists", validate.todos.get, verifySession, (req, res) => {});
+router.get("/api/todolists", validate.todos.get, verifySession, getTodoListsController);
 
-router.post("/api/todolists", express.json(), validate.todos.addList, verifySession, (req, res) => {});
+router.post("/api/todolists", express.json(), validate.todos.addList, verifySession, addListController);
 
-router.post("/api/todos", express.json(), validate.todos.addTodo, verifySession, (req, res) => {});
+router.post("/api/todos", express.json(), validate.todos.addTodo, verifySession, addTodoController);
 
-router.patch("/api/todos", express.json(), validate.todos.toggleTodo, verifySession, (req, res) => {});
+router.patch("/api/todos", express.json(), validate.todos.toggleTodo, verifySession, toggleTodoController);
 
-router.delete("/api/todos", express.json(), validate.todos.removeTodo, verifySession, (req, res) => {});
+router.delete("/api/todos", express.json(), validate.todos.removeTodo, verifySession, removeTodoController);
 
 export default router;

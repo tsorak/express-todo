@@ -24,18 +24,18 @@ async function getUserID(email: string): Promise<number | undefined> {
 	return id;
 }
 
-// async function getUserByID(id: number): Promise<User | undefined> {
-// 	const conn = await db;
-// 	const q = await conn.prepare(`SELECT * FROM users WHERE id = ?`);
-// 	const result = (await q.execute([id])) as unknown[];
-// 	const rows = result[0] as User[] | undefined;
-// 	conn.release();
+async function getUserByID(id: number): Promise<User | undefined> {
+	const conn = await db;
+	const q = await conn.prepare(`SELECT * FROM users WHERE id = ?`);
+	const result = (await q.execute([id])) as unknown[];
+	const rows = result[0] as User[] | [];
+	conn.release();
 
-// 	if (!rows) return undefined;
+	if (!rows.length) return undefined;
 
-// 	const match = rows[0];
-// 	return match;
-// }
+	const match = rows[0];
+	return match;
+}
 
 async function getUserByName(name: string): Promise<User | undefined> {
 	const conn = await db;
@@ -85,4 +85,4 @@ async function addUser(email: string, password: string, name: string): Promise<n
 
 // test();
 
-export { getUserID, getUserByName, correctUserDetails, addUser };
+export { getUserID, getUserByName, correctUserDetails, addUser, getUserByID };

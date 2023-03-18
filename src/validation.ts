@@ -45,11 +45,11 @@ const schema = {
 			content: Joi.string().required().max(64).min(3)
 		}),
 		toggleTodo: Joi.object({
-			todolistId: Joi.number().required().integer().greater(0),
+			// todolistId: Joi.number().required().integer().greater(0),
 			todoId: Joi.number().required().integer().greater(0)
 		}),
 		removeTodo: Joi.object({
-			todolistId: Joi.number().required().integer().greater(0),
+			// todolistId: Joi.number().required().integer().greater(0),
 			todoId: Joi.number().required().integer().greater(0)
 		})
 	}
