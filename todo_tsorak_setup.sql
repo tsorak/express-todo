@@ -16,8 +16,6 @@ CREATE TABLE IF NOT EXISTS friends (
     FOREIGN KEY (user) REFERENCES users(id),
     FOREIGN KEY (friend) REFERENCES users(id)
 );
-DROP TABLE IF EXISTS todos;
-DROP TABLE IF EXISTS todo_lists;
 CREATE TABLE IF NOT EXISTS todo_lists (
     id INT PRIMARY KEY AUTO_INCREMENT,
     owner INT NOT NULL,

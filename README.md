@@ -1,6 +1,16 @@
 # express-todo
 
-## .env
+## Setup
+
+### Database
+
+Run the contents of `todo_tsorak_setup.sql` in a MySQL database.
+
+It creates a new database named `todo_tsorak` along with the needed tables and procedures.
+
+**NOTE**: The script will remove the `todo_tsorak` database if it already exists.
+
+### .env
 
 ```sh
 ACCESS_TOKEN_SECRET="SECRET"
