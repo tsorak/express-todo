@@ -5,7 +5,7 @@ import { getUserByName } from "../../services/userService";
 
 async function addFriendController(req: Request, res: Response) {
 	const jwt: { userID: number } = req.body.jwt;
-	const { username } = req.body;
+	const { username } = req.body as { username: string };
 
 	const friend = await getUserByName(username);
 	if (!friend) return res.status(404).json({ error: { message: "User not found" } });

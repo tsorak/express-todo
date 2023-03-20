@@ -36,7 +36,7 @@ async function getTodoLists(owner: number) {
 	conn.release();
 
 	if (todo_lists.length === 0) return [];
-	//get every todo list's todos
+	//populate each todo list with its todos
 	const populated_todo_lists = todo_lists.map((list) => {
 		return new Promise<TodoList>(async (resolve, _reject) => {
 			const obj = {
@@ -82,7 +82,7 @@ async function addTodo(todolistId: TodoList["id"], content: string) {
 	const { insertId } = result[0] as ResultSetHeader;
 	conn.release();
 
-	return { id: insertId, content, completed: false };
+	return { id: insertId, content, completed: 0 };
 }
 
 async function hasAccessToTodo(userID: number, todoId: TodoItem["id"]) {
@@ -98,7 +98,7 @@ async function hasAccessToTodo(userID: number, todoId: TodoItem["id"]) {
 async function toggleTodo(todoId: TodoItem["id"]) {
 	const conn = await db;
 	const q = await conn.prepare(`UPDATE todos SET completed = NOT completed WHERE id = ?`);
-	const result = await q.execute([todoId]);
+	const _ = await q.execute([todoId]);
 
 	const q2 = await conn.prepare(`SELECT id, content, completed FROM todos WHERE id = ?`);
 	const result2 = await q2.execute([todoId]);
@@ -117,12 +117,5 @@ async function removeTodo(todoId: TodoItem["id"]) {
 
 	return affectedRows;
 }
-
-// async function test() {
-// 	console.log("running test");
-// 	const q = await toggleTodo(1);
-// 	console.log(q);
-// }
-// test();
 
 export { createTodoList, getTodoLists, hasAccessToList, addTodo, hasAccessToTodo, toggleTodo, removeTodo };

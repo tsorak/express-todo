@@ -5,7 +5,8 @@ import { getFriendsByUserID } from "../../services/friendService";
 async function getFriendsController(req: Request, res: Response) {
 	const jwt: { userID: number } = req.body.jwt;
 
-	return res.status(200).json(await getFriendsByUserID(jwt.userID));
+	const usersFriends = await getFriendsByUserID(jwt.userID);
+	return res.status(200).json(usersFriends);
 }
 
 export default getFriendsController;

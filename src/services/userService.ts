@@ -60,11 +60,13 @@ async function correctUserDetails(email: string, password: string): Promise<numb
 	if (!rows.length) throw new Error("User not found");
 
 	const user = rows[0];
-	if (!bcrypt.compareSync(password, user.password)) throw new Error("Incorrect password");
+	const correctPassword = bcrypt.compareSync(password, user.password);
+	if (!correctPassword) throw new Error("Incorrect password");
 
 	return user.id;
 }
 
+//TODO: generate salt
 async function addUser(email: string, password: string, name: string): Promise<number> {
 	const conn = await db;
 	const q = await conn.prepare(`INSERT INTO users (email, password, name) VALUES (?, ?, ?)`);
@@ -74,15 +76,5 @@ async function addUser(email: string, password: string, name: string): Promise<n
 
 	return insertId;
 }
-
-// async function test() {
-// 	const id = await addUser("testEmail", "testPass", "testName");
-// 	console.log("testUserID:", id);
-
-// 	const user = await getUserByID(id);
-// 	console.log("testUser:", user);
-// }
-
-// test();
 
 export { getUserID, getUserByName, correctUserDetails, addUser, getUserByID };

@@ -9,9 +9,9 @@ async function getTodoListsController(req: Request, res: Response) {
 	const user = userService.getUserByID(jwt.userID);
 	if (!user) return res.status(401).json({ error: { message: "User not found" } });
 
-	const todo_lists = await todoService.getTodoLists(jwt.userID);
+	const todoLists = await todoService.getTodoLists(jwt.userID);
 
-	res.status(200).json(todo_lists);
+	res.status(200).json(todoLists);
 }
 
 export default getTodoListsController;

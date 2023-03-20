@@ -1,7 +1,7 @@
 import { ResultSetHeader } from "mysql2";
+
 import db from "../db";
 
-//returns the id: number of the inserted row (amount of rows inserted)
 async function addRefreshToken(userID: number, refreshToken: string): Promise<number> {
 	const conn = await db;
 	const q = await conn.prepare(`INSERT INTO refresh_tokens (user_id, token) VALUES (?, ?)`);
@@ -24,14 +24,5 @@ async function getUserIDbyToken(refreshToken: string): Promise<number | undefine
 
 	return user_id;
 }
-
-// async function test() {
-// 	const id = await addRefreshToken(1, "123");
-// 	console.log("addRefreshToken:", id);
-
-// 	const userID = await getUserIDbyToken("123");
-// 	console.log("getUserIDbyToken:", userID);
-// }
-// test();
 
 export { addRefreshToken, getUserIDbyToken };

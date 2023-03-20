@@ -5,7 +5,7 @@ import * as todoService from "../../services/todoService";
 
 async function addListController(req: Request, res: Response) {
 	const jwt = req.body.jwt as { userID: number };
-	const { title } = req.body;
+	const { title } = req.body as { title: string };
 
 	const owner = await userService.getUserByID(jwt.userID);
 	if (!owner) return res.status(401).json({ error: { message: "User not found" } });

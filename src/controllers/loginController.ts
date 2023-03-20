@@ -15,7 +15,8 @@ const loginController = async (req: Request, res: Response) => {
 		const err = error as Error;
 		console.log(err); //misc: log to disk to keep track of failed logins
 
-		//The error message is either "Incorrect password" or "User not found", send Bad Request to prevent potential attackers from brute-forcing logins.
+		//The error message is either "Incorrect password" or "User not found",
+		//send Bad Request to prevent potential attackers from brute - forcing logins.
 		return res.status(400).json({ error: { message: "Invalid credentials" } });
 	}
 };

@@ -7,6 +7,7 @@ ACCESS_TOKEN_SECRET="SECRET"
 DB_HOST="localhost"
 DB_USER="root"
 DB_PASSWORD=""
+# DB_PORT IS '3306' BY DEFAULT
 ```
 
 ## Available Scripts
@@ -21,8 +22,10 @@ The site was built in a seperate repository and can be found [here](https://gith
 
 ## TODO
 
-- [ ] Implement todo controllers, services
+- [x] Implement todo controllers, services
 - [x] Use MySQL
 - [x] Implement validation (joi)
 - [x] Return names on friends endpoints
+- [ ] Generate salt
 - [ ] Refresh tokens
+- [ ] Use interfaces to describe what properties are expected from request.body
